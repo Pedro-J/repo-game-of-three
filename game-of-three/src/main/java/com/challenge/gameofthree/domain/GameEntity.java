@@ -1,5 +1,6 @@
 package com.challenge.gameofthree.domain;
 
+import com.challenge.gameofthree.domain.enums.GameStatus;
 import com.challenge.gameofthree.event.GameEvent;
 import com.challenge.gameofthree.resource.dto.GameStartDTO;
 import lombok.*;
@@ -23,17 +24,55 @@ public class GameEntity implements Serializable {
     private Long id;
 
     @Column(name = "start_score")
-    private int startScore;
+    private Integer startScore;
 
     @Column(name = "creator")
-    private int creator;
+    private Integer creator;
+
+    @Column(name = "ack_player_1")
+    private Boolean ackPlayer1;
+
+    @Column(name = "ack_player_2")
+    private Boolean ackPlayer2;
+
+    @Column(name = "status")
+    @Enumerated(value = EnumType.STRING)
+    private GameStatus status;
 
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     private List<MoveEntity> moves = new ArrayList<>();
 
+    public void startGame(GameStartDTO gameStartDTO) {
+        this.startScore = gameStartDTO.getStartScore();
+
+        if( status == GameStatus.NEW ) {
+            this.creator = gameStartDTO.getPlayer();
+        }
+
+        setACK(gameStartDTO.getPlayer());
+        setGameStarted();
+    }
+
+    public void setACK(Integer playerNumber) {
+        if ( playerNumber == 1 ) {
+            ackPlayer1 = true;
+            status = GameStatus.WAITING_PLAYER_2;
+        }else {
+            ackPlayer2 = true;
+            status = GameStatus.WAITING_PLAYER_1;
+        }
+    }
+
+    public void setGameStarted() {
+        if ( ackPlayer1 && ackPlayer2 ) {
+            status = GameStatus.STARTED;
+        }
+    }
+
     public GameEntity(GameStartDTO gameStartDTO) {
         this.startScore = gameStartDTO.getStartScore();
         this.creator = gameStartDTO.getPlayer();
+        this.status = GameStatus.NEW;
     }
 
     public GameEntity addMove(MoveEntity move) {
