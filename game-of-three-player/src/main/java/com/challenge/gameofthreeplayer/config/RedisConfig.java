@@ -6,9 +6,8 @@ import com.challenge.gameofthreeplayer.event.receiver.impl.PlayerReceiver;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.data.redis.listener.PatternTopic;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
 import org.springframework.web.client.RestTemplate;
@@ -19,36 +18,32 @@ import java.util.concurrent.CountDownLatch;
 public class RedisConfig {
 
     @Bean
-    StringRedisTemplate template(RedisConnectionFactory connectionFactory) {
-        return new StringRedisTemplate(connectionFactory);
+    JedisConnectionFactory jedisConnectionFactory() {
+        return new JedisConnectionFactory();
     }
 
     @Bean
-    RedisMessageListenerContainer container(RedisConnectionFactory connectionFactory,
-                                            MessageListenerAdapter listenerAdapter,
-                                            @Value("${game.player.number}") String playerNumber) {
-
+    RedisMessageListenerContainer redisContainer(MessageListenerAdapter messageListener, ChannelTopic topic) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-        container.setConnectionFactory(connectionFactory);
-        container.addMessageListener(listenerAdapter, new PatternTopic("player" + playerNumber));
-
+        container.setConnectionFactory(jedisConnectionFactory());
+        container.addMessageListener(messageListener, topic);
         return container;
     }
 
     @Bean
-    MessageListenerAdapter listenerAdapter(PlayerReceiver receiver) {
+    MessageListenerAdapter messageListener(PlayerReceiver receiver) {
         return new MessageListenerAdapter(receiver, "processMessage");
     }
 
     @Bean
-    PlayerReceiver playerReceiver(GameApiClient GameApiClient,
-                                  @Value("${game.player.number}") String playerNumber,
-                                  @Value("${game.maxscore}") String maxScore
-    ) {
-        Integer maxScoreInt = Integer.valueOf(maxScore);
+    PlayerReceiver playerReceiver(GameApiClient GameApiClient, @Value("${game.player.number}") String playerNumber) {
         Integer playerNumberInt = Integer.valueOf(playerNumber);
+        return new PlayerReceiver(GameApiClient, playerNumberInt);
+    }
 
-        return new PlayerReceiver(GameApiClient, playerNumberInt, maxScoreInt);
+    @Bean
+    ChannelTopic topic(@Value("${game.player.number}") String playerNumber) {
+        return new ChannelTopic("player" + playerNumber);
     }
 
     @Bean
