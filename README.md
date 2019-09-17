@@ -1,4 +1,4 @@
-#Implementation Details
+# Implementation Details
 
 This implementation of the game of three consists of two players exchanging messages each other. The first player generates a random score and 
 start the game by sending an HTTP request to the server, the second also need to send a start request in order to start the game, 
