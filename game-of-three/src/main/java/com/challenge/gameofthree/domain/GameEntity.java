@@ -1,9 +1,14 @@
 package com.challenge.gameofthree.domain;
 
 import com.challenge.gameofthree.domain.enums.GameStatus;
+import com.challenge.gameofthree.domain.enums.Player;
 import com.challenge.gameofthree.event.GameEvent;
 import com.challenge.gameofthree.resource.dto.GameStartDTO;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.ToString;
+import org.slf4j.Logger;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -16,7 +21,7 @@ import static java.lang.String.format;
 
 @Entity
 @Table(name = "tb_game")
-@Data @NoArgsConstructor @AllArgsConstructor @Builder @ToString(exclude = {"moves"})
+@Data @AllArgsConstructor @Builder @ToString(exclude = {"moves"})
 public class GameEntity implements Serializable {
 
     @Id
@@ -27,7 +32,8 @@ public class GameEntity implements Serializable {
     private Integer startScore;
 
     @Column(name = "creator")
-    private Integer creator;
+    @Enumerated(value = EnumType.STRING)
+    private Player creator;
 
     @Column(name = "ack_player_1")
     private Boolean ackPlayer1;
@@ -42,19 +48,23 @@ public class GameEntity implements Serializable {
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     private List<MoveEntity> moves = new ArrayList<>();
 
-    public void startGame(GameStartDTO gameStartDTO) {
-        this.startScore = gameStartDTO.getStartScore();
+    public GameEntity startGame(GameStartDTO gameStartDTO) {
+
+        if( isPlayerOne(gameStartDTO.getPlayer()) ) {
+            startScore = gameStartDTO.getStartScore();
+        }
 
         if( status == GameStatus.NEW ) {
-            this.creator = gameStartDTO.getPlayer();
+            creator = Player.fromNumber(gameStartDTO.getPlayer());
         }
 
         setACK(gameStartDTO.getPlayer());
         setGameStarted();
+        return this;
     }
 
     public void setACK(Integer playerNumber) {
-        if ( playerNumber == 1 ) {
+        if ( isPlayerOne(playerNumber) ) {
             ackPlayer1 = true;
             status = GameStatus.WAITING_PLAYER_2;
         }else {
@@ -69,16 +79,23 @@ public class GameEntity implements Serializable {
         }
     }
 
-    public GameEntity(GameStartDTO gameStartDTO) {
-        this.startScore = gameStartDTO.getStartScore();
-        this.creator = gameStartDTO.getPlayer();
-        this.status = GameStatus.NEW;
+    public boolean isGameStarted() {
+        return status == GameStatus.STARTED;
     }
 
-    public GameEntity addMove(MoveEntity move) {
+    public boolean isPlayerOne(Integer playerNumber) {
+        return Player.fromNumber(playerNumber).equals(Player.ONE);
+    }
+
+    public GameEntity() {
+        ackPlayer1 = false;
+        ackPlayer2 = false;
+        status = GameStatus.NEW;
+    }
+
+    public void addMove(MoveEntity move) {
         move.setGame(this);
         moves.add(move);
-        return this;
     }
 
     public GameEntity loadMoves(Supplier<List<MoveEntity>> loader) {
@@ -88,8 +105,8 @@ public class GameEntity implements Serializable {
 
     public GameEvent toEvent() {
         return getLastMove()
-                .map(move -> new GameEvent(id, getOtherPlayer(move.getPlayer()), move.getFinalScore()))
-                .orElse(new GameEvent(id, getOtherPlayer(creator), startScore));
+                .map(move -> new GameEvent(id, getOtherPlayer(move.getPlayer().getNumber()), move.getFinalScore()))
+                .orElse(new GameEvent(id, Player.TWO.getNumber(), startScore));
 
     }
 
@@ -113,30 +130,33 @@ public class GameEntity implements Serializable {
         return getLastMove().filter( game -> game.getFinalScore() == 1).isPresent();
     }
 
-    public String getGameStatus() {
+    public void changeToFinished() {
+        status = GameStatus.FINISHED;
+    }
+
+    public void printGameStatus(Logger logger) {
         if ( getLastMove().isPresent() ) {
             MoveEntity lastMove = getLastMove().get();
 
-            return new StringBuilder()
-                    .append("M=performMove;")
-                    .append("status=").append( verifyGameIsFinished() ? "GAME_FINISHED" : "ACTIVE").append(";")
-                    .append("action=gameStatus;")
-                    .append("game=").append(lastMove.getGame().id).append(";")
-                    .append("player=").append(lastMove.getPlayer()).append(";")
-                    .append("addedScore=").append(lastMove.getAddedScore()).append(";")
-                    .append("originalScore=").append(lastMove.getOriginalScore()).append(";")
-                    .append("finalScore=").append(lastMove.getFinalScore()).append(";")
-                    .toString();
+            logger.info(new StringBuilder()
+                    .append("Game=").append(lastMove.getGame().id).append(";")
+                    .append("Player_").append(lastMove.getPlayer().name())
+                    .append(verifyGameIsFinished() ? " IS WINNER!!!": "" ).append(";")
+                    .append("Status=").append( verifyGameIsFinished() ? "GAME_FINISHED" : "ACTIVE").append(";")
+                    .append("AddedScore=").append(lastMove.getAddedScore()).append(";")
+                    .append("OriginalScore=").append(lastMove.getOriginalScore()).append(";")
+                    .append("FinalScore=").append(lastMove.getFinalScore()).append(";\n")
+                    .toString());
         }else {
-            return new StringBuilder()
-                    .append("M=performMove;")
+            logger.info(new StringBuilder()
                     .append("action=gameStatus;")
                     .append("status=NO_MOVE;")
-                    .toString();
+                    .toString());
         }
     }
 
-    public String getInitGameStatus() {
-        return format("M=startGame;status=Initializing;gameId=%d,creator=%d;startScore=%d", id, creator, startScore);
+    public void printInitGameStatus(Logger logger) {
+        logger.info(" ---------------- NEW GAME ------------------- \n");
+        logger.info(format("Status=Initializing;Game=%d;Creator=%d;StartScore=%d; \n", id, creator.getNumber(), startScore));
     }
 }

@@ -14,10 +14,7 @@ public abstract class RedisEventPublisher<T extends Serializable> extends JSONEv
 
     @Override
     protected void publish(String channel, String event) {
-        int receiversCount = 0;
-        while( receiversCount == 0 ) {
-            receiversCount = this.redisTemplate.convertAndSend(channel, event);
-        }
+        this.redisTemplate.convertAndSend(channel, event);
     }
 
 }

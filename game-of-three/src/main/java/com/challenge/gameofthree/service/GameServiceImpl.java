@@ -12,8 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-
-import static java.util.Optional.of;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -33,26 +32,36 @@ public class GameServiceImpl implements GameService {
     @Override
     public void performMove(final long gameId, final GameMoveDTO move) {
         gameRepository.findByIdWithMoves(gameId)
-                .map( game -> {
-                    gameRepository.save(game.addMove(new MoveEntity(move)));
-                    LOGGER.info(game.getGameStatus());
-                    return game;
-                })
+                .map( game -> updateGameInfo(game, move))
                 .filter(GameEntity::verifyGameIsNotFinished)
                 .ifPresent(game -> gameEventPublisher.publish(game.toEvent()));
     }
 
     @Override
     public void startGame(GameStartDTO gameStartDTO) {
-        LOGGER.info("\n ---------------- NEW GAME ------------------- \n");
-        of(gameRepository.save(new GameEntity(gameStartDTO)))
-            .ifPresent( game -> {
-                LOGGER.info(game.getInitGameStatus());
-                gameEventPublisher.publish(game.toEvent());
-            });
+
+        Optional<GameEntity> currentGame = gameRepository.findCurrentGame();
+
+        if ( currentGame.isPresent() ) {
+            currentGame.map(game -> game.startGame(gameStartDTO))
+                    .filter(GameEntity::isGameStarted)
+                    .map(game -> gameRepository.save(game))
+                    .ifPresent(game -> {
+                        game.printInitGameStatus(LOGGER);
+                        gameEventPublisher.publish(game.toEvent());
+                    });
+        }else {
+            gameRepository.save(new GameEntity().startGame(gameStartDTO));
+        }
     }
 
+    private GameEntity updateGameInfo(final GameEntity game, final GameMoveDTO move) {
+        if (game.verifyGameIsFinished()){
+            game.changeToFinished();
+        }
+        game.addMove(new MoveEntity(move));
 
-
-
+        game.printGameStatus(LOGGER);
+        return gameRepository.save(game);
+    }
 }

@@ -1,11 +1,10 @@
-# game-of-three
+# game-of-three (SERVER)
 
-Game where to player .....
+The server stores all data of games, players and its moves. It helps to orchestrate the communication between players moves. 
+It's also responsible to print all the game status and moves sent between both players.
 
 
 ## Information:
-
-** Warning **: 
 
 - You must have JAVA 8 or more and Docker installed on your machine.
 - An application uses gradle to manage dependencies and build.
@@ -26,9 +25,19 @@ and select the directory of this project, it will download the required dependen
 
 ```
 $   docker run --name redis-message-broker -d -p 6379:6379 redis
+
 ```
 
-## 2 - Running the project
+## 3 - Build and run the project in .jar
+
+```
+$   cd {PROJECT_DIRECTORY}
+$   ./gradlew build; && cd build/libs
+$   java -jar game-of-three-0.0.1-SNAPSHOT.jar
+$
+```
+
+## Running the project directly (optional)
 
 ```
 $   cd {PROJECT_DIRECTORY}

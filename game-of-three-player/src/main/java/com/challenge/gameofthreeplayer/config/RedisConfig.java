@@ -36,9 +36,11 @@ public class RedisConfig {
     }
 
     @Bean
-    PlayerReceiver playerReceiver(GameApiClient GameApiClient, @Value("${game.player.number}") String playerNumber) {
+    PlayerReceiver playerReceiver(GameApiClient GameApiClient,
+                                  @Value("${game.player.number}") String playerNumber,
+                                  @Value("${game.play.auto}") boolean auto) {
         Integer playerNumberInt = Integer.valueOf(playerNumber);
-        return new PlayerReceiver(GameApiClient, playerNumberInt);
+        return new PlayerReceiver(GameApiClient, playerNumberInt, auto);
     }
 
     @Bean

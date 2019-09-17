@@ -1,5 +1,6 @@
 package com.challenge.gameofthree.domain;
 
+import com.challenge.gameofthree.domain.enums.Player;
 import com.challenge.gameofthree.resource.dto.GameMoveDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +26,8 @@ public  class MoveEntity implements Serializable {
     private GameEntity game;
 
     @Column(name = "player")
-    private Integer player;
+    @Enumerated(value = EnumType.STRING)
+    private Player player;
 
     @Column(name = "added_score")
     private Integer addedScore;
@@ -44,7 +46,7 @@ public  class MoveEntity implements Serializable {
     }
 
     public void setMove(GameMoveDTO move) {
-        this.setPlayer(move.getPlayer());
+        this.setPlayer(Player.fromNumber(move.getPlayer()));
         this.setAddedScore(move.getAddedScore());
         this.setOriginalScore(move.getOriginalScore());
         this.setFinalScore(move.getFinalScore());

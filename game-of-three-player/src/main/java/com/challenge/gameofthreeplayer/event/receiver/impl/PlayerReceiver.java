@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Scanner;
 import java.util.stream.IntStream;
 
 public class PlayerReceiver extends JSONReceiver<GameEvent> {
@@ -16,10 +17,12 @@ public class PlayerReceiver extends JSONReceiver<GameEvent> {
     private static final Logger LOGGER = LoggerFactory.getLogger(PlayerReceiver.class);
 
     private GameApiClient gameApiClient;
+    private boolean auto;
 
-    public PlayerReceiver(GameApiClient gameApiClient, Integer number) {
+    public PlayerReceiver(GameApiClient gameApiClient, Integer number, boolean auto) {
         super(number, GameEvent.class);
         this.gameApiClient = gameApiClient;
+        this.auto = auto;
         LOGGER.info("M=init;receiver="+ getName());
     }
 
@@ -35,16 +38,35 @@ public class PlayerReceiver extends JSONReceiver<GameEvent> {
     }
 
     private GameMoveDTO performMove(Integer originalScore) {
-        Integer addedScore = IntStream.of(-1, 0, 1).filter(value -> (originalScore + value) % 3 == 0 )
-                .findFirst().orElse(-1);
+        Integer addedScore;
+
+        if( auto ) {
+            addedScore = getAutoAddedScore(originalScore);
+        }else{
+            addedScore = getManualAddedScore();
+        }
 
         Integer finalScore = (originalScore + addedScore) / 3;
 
-        GameMoveDTO gameMoveDTO = new GameMoveDTO();
-        gameMoveDTO.setAddedScore(addedScore);
-        gameMoveDTO.setFinalScore(finalScore);
-        gameMoveDTO.setOriginalScore(originalScore);
-        return gameMoveDTO;
+        return new GameMoveDTO(addedScore, originalScore, finalScore);
+    }
+
+    private Integer getAutoAddedScore(Integer originalScore) {
+        return IntStream.of(-1, 0, 1).filter(value -> (originalScore + value) % 3 == 0 )
+                .findFirst().orElse(-1);
+    }
+
+    private Integer getManualAddedScore() {
+        Integer addedValue;
+
+        do {
+            Scanner keyboard = new Scanner(System.in);
+            System.out.println("Add a score of 1, 0 or -1 to the current score: ");
+            addedValue = keyboard.nextInt();
+
+        }while ( addedValue > 1 || addedValue < -1 );
+
+        return addedValue;
     }
 
 }

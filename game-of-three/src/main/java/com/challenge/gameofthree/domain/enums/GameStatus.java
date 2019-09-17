@@ -5,5 +5,5 @@ public enum GameStatus {
     WAITING_PLAYER_1,
     WAITING_PLAYER_2,
     STARTED,
-    FINISIHED
+    FINISHED
 }

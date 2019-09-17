@@ -13,17 +13,21 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
+import javax.annotation.PostConstruct;
 import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
 @SpringBootApplication
-public class GameOfThreePlayerApplication implements CommandLineRunner {
+public class GameOfThreePlayerApplication implements CommandLineRunner{
 
 	@Value("${game.maxscore}")
 	private String maxScore;
 
 	@Value("${game.player.number}")
 	private String playerNumber;
+
+	@Value("${game.start}")
+	private boolean start;
 
 	@Autowired
 	private GameApiClient gameApiClient;
@@ -37,24 +41,23 @@ public class GameOfThreePlayerApplication implements CommandLineRunner {
 		latch.await();
 	}
 
-
 	@Override
 	public void run(String... args) throws Exception {
-		Integer maxScoreInt = Integer.valueOf(maxScore);
-		Integer playerNumberInt = Integer.valueOf(playerNumber);
-		initGame(playerNumberInt, maxScoreInt);
-	}
-
-
-	private void initGame(Integer number, Integer maxScore) {
-		Random generator = new Random();
-		Integer startScore = generator.nextInt(maxScore);
-		if ( number == 1 ){
-			ResponseEntity<?> response = gameApiClient.start(new GameStartDTO(number, startScore));
-
-			if (response.getStatusCode() == HttpStatus.CREATED) {
-				LOGGER.info("M=process;state=info;details=%s;message=Start Game send successfully to the server", response.getStatusCode());
-			}
+		if( start ) {
+			Integer maxScoreInt = Integer.valueOf(maxScore);
+			Integer playerNumberInt = Integer.valueOf(playerNumber);
+			initGame(playerNumberInt, maxScoreInt);
 		}
 	}
+
+	private void initGame(Integer number, Integer maxScore) throws InterruptedException {
+		Random generator = new Random();
+		Integer startScore = generator.nextInt(maxScore);
+		ResponseEntity<?> response = gameApiClient.start(new GameStartDTO(number, startScore));
+
+		if (response.getStatusCode() == HttpStatus.CREATED) {
+			LOGGER.info("M=process;state=info;details=%s;message=Start Game send successfully to the server", response.getStatusCode());
+		}
+	}
+
 }

@@ -19,4 +19,10 @@ public @Data @NoArgsConstructor class GameMoveDTO {
 
     @JsonProperty(value = "final_score")
     private Integer finalScore;
+
+    public GameMoveDTO(Integer addedScore, Integer originalScore, Integer finalScore) {
+        this.addedScore = addedScore;
+        this.finalScore = finalScore;
+        this.originalScore = originalScore;
+    }
 }
