@@ -10,8 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.Optional;
 
 @Service
@@ -56,10 +56,10 @@ public class GameServiceImpl implements GameService {
     }
 
     private GameEntity updateGameInfo(final GameEntity game, final GameMoveDTO move) {
+        game.addMove(new MoveEntity(move));
         if (game.verifyGameIsFinished()){
             game.changeToFinished();
         }
-        game.addMove(new MoveEntity(move));
 
         game.printGameStatus(LOGGER);
         return gameRepository.save(game);

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("gameofthree/games")
+@RequestMapping("/gameofthree/games")
 public class GameResource {
 
     private GameService gameService;

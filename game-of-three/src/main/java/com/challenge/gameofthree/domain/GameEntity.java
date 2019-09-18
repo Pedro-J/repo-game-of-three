@@ -48,6 +48,12 @@ public class GameEntity implements Serializable {
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL)
     private List<MoveEntity> moves = new ArrayList<>();
 
+    public GameEntity() {
+        ackPlayer1 = false;
+        ackPlayer2 = false;
+        status = GameStatus.NEW;
+    }
+
     public GameEntity startGame(GameStartDTO gameStartDTO) {
 
         if( isPlayerOne(gameStartDTO.getPlayer()) ) {
@@ -63,7 +69,7 @@ public class GameEntity implements Serializable {
         return this;
     }
 
-    public void setACK(Integer playerNumber) {
+    private void setACK(Integer playerNumber) {
         if ( isPlayerOne(playerNumber) ) {
             ackPlayer1 = true;
             status = GameStatus.WAITING_PLAYER_2;
@@ -73,7 +79,7 @@ public class GameEntity implements Serializable {
         }
     }
 
-    public void setGameStarted() {
+    private void setGameStarted() {
         if ( ackPlayer1 && ackPlayer2 ) {
             status = GameStatus.STARTED;
         }
@@ -83,14 +89,8 @@ public class GameEntity implements Serializable {
         return status == GameStatus.STARTED;
     }
 
-    public boolean isPlayerOne(Integer playerNumber) {
+    private boolean isPlayerOne(Integer playerNumber) {
         return Player.fromNumber(playerNumber).equals(Player.ONE);
-    }
-
-    public GameEntity() {
-        ackPlayer1 = false;
-        ackPlayer2 = false;
-        status = GameStatus.NEW;
     }
 
     public void addMove(MoveEntity move) {
