@@ -28,9 +28,7 @@ public abstract class JSONReceiver<T extends Serializable> implements MessageLis
 
     @Override
     public void onMessage(Message message, byte[] pattern) {
-
         try {
-            LOGGER.info(getName() + " received: " + message);
             T event = jsonMapper.readValue(message.toString(), tClass);
             process(event);
         } catch (IOException ex) {

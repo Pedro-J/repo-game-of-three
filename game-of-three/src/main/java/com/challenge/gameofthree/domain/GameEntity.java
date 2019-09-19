@@ -127,6 +127,10 @@ public class GameEntity implements Serializable {
     }
 
     public boolean verifyGameIsFinished() {
+        return getLastMove().filter( game -> game.getFinalScore() < 3).isPresent();
+    }
+
+    public boolean hasWinner() {
         return getLastMove().filter( game -> game.getFinalScore() == 1).isPresent();
     }
 
@@ -141,7 +145,7 @@ public class GameEntity implements Serializable {
             logger.info(new StringBuilder()
                     .append("Game=").append(lastMove.getGame().id).append(";")
                     .append("Player_").append(lastMove.getPlayer().name())
-                    .append(verifyGameIsFinished() ? " IS WINNER!!!": "" ).append(";")
+                    .append(verifyGameIsFinished() ? hasWinner() ? " IS WINNER!!!": " FINISHES WITH "+ lastMove.getFinalScore() +", THERE NO WINNER" : "").append(";")
                     .append("Status=").append( verifyGameIsFinished() ? "GAME_FINISHED" : "ACTIVE").append(";")
                     .append("AddedScore=").append(lastMove.getAddedScore()).append(";")
                     .append("OriginalScore=").append(lastMove.getOriginalScore()).append(";")

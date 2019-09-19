@@ -28,12 +28,16 @@ public class PlayerReceiver extends JSONReceiver<GameEvent> {
 
     @Override
     protected void process(GameEvent event) {
-        GameMoveDTO gameMoveDTO = performMove(event.getCurrentScore());
-        gameMoveDTO.setPlayer(event.getPlayer());
-        ResponseEntity<?> response = gameApiClient.doMove(event.getGameId(), gameMoveDTO);
+        GameMoveDTO move = performMove(event.getCurrentScore());
+        move.setPlayer(event.getPlayer());
+
+        LOGGER.info(String.format("GAME_INFO - Game: %d - Player_%d;current_score:%d;added_score:%s;final_score:%d;",
+                event.getGameId(), move.getPlayer(), move.getOriginalScore(), move.getAddedScore(), move.getFinalScore()));
+
+        ResponseEntity<?> response = gameApiClient.doMove(event.getGameId(), move);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            LOGGER.info("M=process;state=info;details=%s;message=Move request send successfully to the server", response.getStatusCode());
+            LOGGER.info("M=process;state=info;details=%s;message=Move request send successfully to the server", response.getStatusCode().toString());
         }
     }
 

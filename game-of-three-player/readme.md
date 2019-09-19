@@ -12,10 +12,10 @@ and process the messages.
 
 ## Configurable properties
 
-- game.player.number [integer] - The player number, it must be 1 or 2.
-- game.play.auto [boolean] - Specifies if the players added score has to be from input keybord or selected automatically.
-- game.maxscore [integer] - The max score allowed to be selected randomly
-- game.start [boolean] - Send a request to the server to start the game
+- game.player.number [integer] - The player number, it must be 1 or 2. [default 1]
+- game.play.auto [boolean] - Specifies if the players added score has to be from input keybord or selected automatically. [default true]
+- game.maxscore [integer] - The max score allowed to be selected randomly on game start. [default 1000]
+- game.keep.play [boolean] - Always a game finishes it calls the server to start a new one each 20s. [default true]
 
 ## 1 - Dependencies setup
 
@@ -25,22 +25,22 @@ and select the directory of this project, it will download the required dependen
 
 ## 2 - Build and enter into executable directory
 
+- The .jar files are generated in repo-game-of-three/bin or ../bin
+
 ```
-$   cd {PROJECT_DIRECTORY}
-$   ./gradlew build; && cd build/libs
-$
+$   ./gradlew build; cd ../bin
 ```
 
 ## 3 - Initializing player 1
 
 ```
-$   java -jar -Dgame.play.auto=false -Dgame.player.number=1 -Dgame.start=true game-of-three-player-0.0.1-SNAPSHOT.jar
+$   java -jar -Dgame.player.number=1 game-of-three-player-0.0.1-SNAPSHOT.jar
 ```
 
 ## 4 - Initializing player 2 (Open on different terminal)
 
 ```
-$   java -jar -Dgame.play.auto=false -Dgame.player.number=2 -Dgame.start=true game-of-three-player-0.0.1-SNAPSHOT.jar
+$   java -jar -Dgame.player.number=2 game-of-three-player-0.0.1-SNAPSHOT.jar
 ```
 
 

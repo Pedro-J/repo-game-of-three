@@ -9,7 +9,9 @@ It's also responsible to print all the game status and moves sent between both p
 - You must have JAVA 8 or more and Docker installed on your machine.
 - An application uses gradle to manage dependencies and build.
 - The data is stored on a memory database, so it is not necessary to download any database.
-- The project uses docker to download and start the redis into a container, it is used as the message broker. 
+- The project uses docker to download and start the redis into a container, it is used as the message broker.
+- The application's tomcat runs on port 8080 and redis on 6379, those ports must be available.
+ 
 If you don't have docker follow the link: 
 
 windows -> https://docs.docker.com/docker-for-windows/install/ 
@@ -30,11 +32,14 @@ $   docker run --name redis-message-broker -d -p 6379:6379 redis
 
 ## 3 - Build and run the project in .jar
 
+- The .jar files are generated in repo-game-of-three/bin or ../bin
+
 ```
+
 $   cd {PROJECT_DIRECTORY}
-$   ./gradlew build; && cd build/libs
+$   ./gradlew build; cd ../bin
 $   java -jar game-of-three-0.0.1-SNAPSHOT.jar
-$
+
 ```
 
 ## Running the project directly (optional)
