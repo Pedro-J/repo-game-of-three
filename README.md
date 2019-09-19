@@ -37,8 +37,9 @@ and process the messages.
 
 # 1 - How to run the application
 
-You can run the two .jar on the /bin directory using the following commands, but you can also build the jars on your own IDE
-and run them. To do this, go to the /game-of-three and game-of-three-player directory and follow the instructions.
+You can run the two .jar on the /bin directory using the following commands. But you can also build the jars on your own IDE
+and run them. To do this, open the directories /game-of-three and game-of-three-player on your IDE and follow the instructions 
+on their readme.md.
 
 # 2 - Runnning the server
 
@@ -54,7 +55,7 @@ $   java -jar game-of-three-0.0.1-SNAPSHOT.jar
 
 # 3 Running the clients
 
-You must be on {PROJECT_DIRECTORY}/bin directory and must execute each player in a different terminals.
+You must be on {PROJECT_DIRECTORY}/bin directory and must execute each player in different terminals.
 
 ```
 $   cd {PROJECT_DIRECTORY}/bin
@@ -79,3 +80,11 @@ $   java -jar -Dgame.player.number=2 game-of-three-player-0.0.1-SNAPSHOT.jar
 - game.play.auto [boolean] - Specifies if the players added score has to be from input keybord or selected automatically. [default true]
 - game.maxscore [integer] - The max score allowed to be selected randomly on game start (min: 100 | max: maxScore). [default 1000]
 - game.keep.play [boolean] - Always a game finishes it calls the server to start a new one after 20s. [default true]
+
+## To play manually using the keyboard input you must start the clients with the params below:
+
+```
+$   java -jar -Dgame.player.number=1 -Dgame.play.auto=false -Dgame.keep.play=false game-of-three-player-0.0.1-SNAPSHOT.jar
+
+$   java -jar -Dgame.player.number=2 -Dgame.play.auto=false -Dgame.keep.play=false game-of-three-player-0.0.1-SNAPSHOT.jar
+```
