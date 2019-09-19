@@ -10,7 +10,6 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-
 import static com.challenge.gameofthree.domain.enums.Player.ONE;
 import static com.challenge.gameofthree.domain.enums.Player.TWO;
 import static java.util.stream.Collectors.toList;

@@ -2,10 +2,7 @@ package com.challenge.gameofthree.repository;
 
 import com.challenge.gameofthree.domain.GameEntity;
 import com.challenge.gameofthree.domain.MoveEntity;
-import org.hamcrest.Matchers;
 import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +16,11 @@ import static com.challenge.gameofthree.domain.enums.Player.ONE;
 import static com.challenge.gameofthree.domain.enums.Player.TWO;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Stream.of;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @DataJpaTest

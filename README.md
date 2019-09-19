@@ -41,7 +41,7 @@ You can run the two .jar on the /bin directory using the following commands. But
 and run them. To do this, open the directories /game-of-three and game-of-three-player on your IDE and follow the instructions 
 on their readme.md.
 
-# 2 - Runnning the server
+# 2 - Running the server
 
 - This application uses tomcat that runs on port 8080 and redis that runs on 6379, those ports must be available.
 
@@ -78,7 +78,7 @@ $   java -jar -Dgame.player.number=2 game-of-three-player-0.0.1-SNAPSHOT.jar
 
 - game.player.number [integer] - The player number, it must be 1 or 2. [default 1]
 - game.play.auto [boolean] - Specifies if the players added score has to be from input keybord or selected automatically. [default true]
-- game.maxscore [integer] - The max score allowed to be selected randomly on game start (min: 100 | max: maxScore). [default 1000]
+- game.max.score [integer] - The max score allowed to be selected randomly on game start (min: 100 | max: maxScore). [default 1000]
 - game.keep.play [boolean] - Always a game finishes it calls the server to start a new one after 20s. [default true]
 
 ## To play manually using the keyboard input you must start the clients with the params below:

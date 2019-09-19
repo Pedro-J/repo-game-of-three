@@ -14,7 +14,7 @@ and process the messages.
 
 - game.player.number [integer] - The player number, it must be 1 or 2. [default 1]
 - game.play.auto [boolean] - Specifies if the players added score has to be from input keybord or selected automatically. [default true]
-- game.maxscore [integer] - The max score allowed to be selected randomly on game start. [default 1000]
+- game.max.score [integer] - The max score allowed to be selected randomly on game start. [default 1000]
 - game.keep.play [boolean] - Always a game finishes it calls the server to start a new one each 20s. [default true]
 
 ## 1 - Dependencies setup

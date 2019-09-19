@@ -1,6 +1,5 @@
 package com.challenge.gameofthreeplayer.util;
 
-import com.challenge.gameofthreeplayer.GameOfThreePlayerApplication;
 import com.challenge.gameofthreeplayer.client.GameApiClient;
 import com.challenge.gameofthreeplayer.dto.GameStartDTO;
 import org.slf4j.Logger;

@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.Scanner;
 import java.util.stream.IntStream;
 
-import static java.lang.String.*;
+import static java.lang.String.format;
 
 public class PlayerReceiver extends JSONReceiver<GameEvent> {
 
@@ -35,7 +35,6 @@ public class PlayerReceiver extends JSONReceiver<GameEvent> {
 
         printStatus(move, event);
         sendNewMove(event.getGameId(), move);
-
     }
 
     private void sendNewMove(Long gameId, GameMoveDTO move) {
